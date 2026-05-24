@@ -1,0 +1,178 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+
+<!-- HERO -->
+<section class="hero">
+  <p class="hero-eyebrow">WHO Global Immunisation Data</p>
+  <h1>Understanding <span>Preventable</span><br>Infectious Diseases</h1>
+  <p class="hero-desc">
+    Explore unbiased, comprehensive vaccination and infection data from
+    {{ fact_timeframe }} — empowering researchers, policy makers, and
+    the public to understand global immunisation efforts.
+  </p>
+  <div class="hero-cta">
+    <a href="{{ url_for('vaccination') }}" class="btn-hero btn-hero-primary">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/>
+      </svg>
+      Explore Vaccination Data
+    </a>
+    <a href="{{ url_for('infection') }}" class="btn-hero btn-hero-outline">
+      Infection by Economy →
+    </a>
+  </div>
+</section>
+
+<div class="content-area">
+
+  <!-- FACT STATS -->
+  <div class="stats-grid">
+
+    <div class="stat-card teal">
+      <div class="stat-icon teal">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/>
+          <line x1="8" y1="2" x2="8" y2="6"/><line x1="16" y1="2" x2="16" y2="6"/>
+        </svg>
+      </div>
+      <div class="stat-label">Data Timeframe</div>
+      <div class="stat-value">{{ fact_timeframe }}</div>
+      <div class="stat-sub">Years of vaccination records</div>
+    </div>
+
+    <div class="stat-card amber">
+      <div class="stat-icon amber">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="8" r="4"/><path d="M6 20v-2a6 6 0 0 1 12 0v2"/>
+        </svg>
+      </div>
+      <div class="stat-label">Countries Tracked</div>
+      <div class="stat-value">{{ fact_countries }}</div>
+      <div class="stat-sub">Across all WHO regions</div>
+    </div>
+
+    <div class="stat-card sky">
+      <div class="stat-icon sky">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+        </svg>
+      </div>
+      <div class="stat-label">Global Avg. Coverage</div>
+      <div class="stat-value">{{ avg_cov }}%</div>
+      <div class="stat-sub">Latest year, all antigens</div>
+    </div>
+
+    <div class="stat-card rose">
+      <div class="stat-icon rose">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+          <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+        </svg>
+      </div>
+      <div class="stat-label">Total Reported Cases</div>
+      <div class="stat-value" style="font-size:1.5rem;">{{ total_cases }}</div>
+      <div class="stat-sub">Across all diseases &amp; years</div>
+    </div>
+
+  </div>
+
+  <!-- TWO COLUMNS -->
+  <div class="two-col">
+
+    <!-- Regional Coverage Chart -->
+    <div class="card">
+      <div class="card-header">
+        <h3>MCV2 Coverage by Region</h3>
+        <span class="badge badge-teal">Latest Year</span>
+      </div>
+      <div class="card-body">
+        <div class="region-bar-list">
+          {% for row in regional %}
+          <div class="region-bar-row">
+            <span class="region-name">{{ row.region }}</span>
+            <div class="region-bar-track">
+              <div class="region-bar-fill" style="width: {{ row.avg_cov }}%"></div>
+            </div>
+            <span class="region-bar-val">{{ row.avg_cov }}%</span>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+
+    <!-- Diseases Covered -->
+    <div class="card">
+      <div class="card-header">
+        <h3>Preventable Diseases Covered</h3>
+        <span class="badge badge-gray">{{ diseases|length }} diseases</span>
+      </div>
+      <div class="card-body">
+        <p style="font-size:.875rem; color:var(--gray-600); line-height:1.7; margin-bottom:20px;">
+          Our dataset tracks infections and vaccination coverage for the following
+          WHO-monitored preventable diseases. Use the Explore pages to filter by disease,
+          country, year, and economic status.
+        </p>
+        <div class="tag-list">
+          {% for d in diseases %}
+          <span class="tag">{{ d }}</span>
+          {% endfor %}
+        </div>
+
+        <div style="margin-top:28px; padding-top:24px; border-top:1px solid var(--gray-100);">
+          <div class="stat-label" style="margin-bottom:8px;">Vaccination Records in Database</div>
+          <div style="font-family:var(--font-head); font-size:1.8rem; font-weight:700; color:var(--navy);">
+            {{ fact_records }}
+          </div>
+          <div class="stat-sub">Individual country-antigen-year observations</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Quick Navigation -->
+  <div class="card">
+    <div class="card-header">
+      <h3>Explore the Data</h3>
+    </div>
+    <div class="card-body">
+      <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:16px;">
+
+        <a href="{{ url_for('vaccination') }}" style="text-decoration:none;">
+          <div style="border:1.5px solid var(--gray-200); border-radius:var(--radius-sm); padding:20px; transition:all .2s; cursor:pointer;"
+               onmouseover="this.style.borderColor='var(--teal)';this.style.background='rgba(0,201,167,.03)'"
+               onmouseout="this.style.borderColor='var(--gray-200)';this.style.background='white'">
+            <div style="font-size:.65rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--teal);margin-bottom:8px;font-family:var(--font-mono);">Level 2A</div>
+            <div style="font-weight:600;color:var(--navy);margin-bottom:6px;">Vaccination Rates</div>
+            <div style="font-size:.82rem;color:var(--gray-600);line-height:1.5;">Filter by country, region, antigen, and year. See which countries meet the 90% herd-immunity target.</div>
+          </div>
+        </a>
+
+        <a href="{{ url_for('infection') }}" style="text-decoration:none;">
+          <div style="border:1.5px solid var(--gray-200); border-radius:var(--radius-sm); padding:20px; transition:all .2s; cursor:pointer;"
+               onmouseover="this.style.borderColor='var(--amber)';this.style.background='rgba(245,158,11,.03)'"
+               onmouseout="this.style.borderColor='var(--gray-200)';this.style.background='white'">
+            <div style="font-size:.65rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--amber);margin-bottom:8px;font-family:var(--font-mono);">Level 2B</div>
+            <div style="font-weight:600;color:var(--navy);margin-bottom:6px;">Infection by Economy</div>
+            <div style="font-size:.82rem;color:var(--gray-600);line-height:1.5;">Explore disease burden across economic phases — Developed, Developing, Least Developed, and more.</div>
+          </div>
+        </a>
+
+        <a href="{{ url_for('mission') }}" style="text-decoration:none;">
+          <div style="border:1.5px solid var(--gray-200); border-radius:var(--radius-sm); padding:20px; transition:all .2s; cursor:pointer;"
+               onmouseover="this.style.borderColor='var(--sky)';this.style.background='rgba(56,189,248,.03)'"
+               onmouseout="this.style.borderColor='var(--gray-200)';this.style.background='white'">
+            <div style="font-size:.65rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--sky);margin-bottom:8px;font-family:var(--font-mono);">Level 1B</div>
+            <div style="font-weight:600;color:var(--navy);margin-bottom:6px;">Our Mission</div>
+            <div style="font-size:.82rem;color:var(--gray-600);line-height:1.5;">Learn about our purpose, the personas we serve, and the team behind this project.</div>
+          </div>
+        </a>
+
+      </div>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

@@ -1,0 +1,250 @@
+{% extends "base.html" %}
+{% block title %}Above-Average Infection Rates{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+  <div class="page-header-eyebrow">Level 3B — Deep Dive</div>
+  <h1>Countries with Above-Average Infection Rates</h1>
+  <p>
+    Find the global average infection rate per 100,000 people and identify every
+    country whose rate exceeds that benchmark for a selected disease and year.
+  </p>
+</div>
+
+<div class="content-area">
+
+  <!-- FILTER -->
+  <div class="filter-card">
+    <form method="GET" action="{{ url_for('above_average') }}">
+      <div class="filter-grid">
+
+        <div class="form-group">
+          <label for="disease">Infection Type</label>
+          <select name="disease" id="disease" class="form-control">
+            {% for d in diseases %}
+            <option value="{{ d }}" {% if d == sel_disease %}selected{% endif %}>{{ d }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="year">Year</label>
+          <select name="year" id="year" class="form-control">
+            {% for y in years %}
+            <option value="{{ y }}" {% if y == sel_year %}selected{% endif %}>{{ y }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>&nbsp;</label>
+          <button type="submit" class="btn btn-primary" style="width:100%;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            </svg>
+            Find Countries
+          </button>
+        </div>
+
+      </div>
+    </form>
+  </div>
+
+  <!-- GLOBAL RATE BANNER -->
+  <div style="background: linear-gradient(135deg, var(--navy-mid), var(--navy-lite));
+              border-radius: var(--radius);
+              padding: 28px 32px;
+              margin-bottom: 28px;
+              display: flex;
+              align-items: center;
+              justify-content: space-between;
+              flex-wrap: wrap;
+              gap: 20px;
+              box-shadow: var(--shadow);">
+
+    <div>
+      <div style="font-size:.68rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--teal);margin-bottom:8px;font-family:var(--font-mono);">
+        Global Benchmark
+      </div>
+      <div style="font-family:var(--font-head);font-size:2.4rem;font-weight:700;color:var(--white);line-height:1;">
+        {{ global_rate }}
+        <span style="font-size:1rem;font-weight:400;color:rgba(255,255,255,.5);">per 100,000</span>
+      </div>
+      <div style="margin-top:6px;font-size:.875rem;color:rgba(255,255,255,.5);">
+        Global average {{ sel_disease }} infection rate in {{ sel_year }}
+      </div>
+    </div>
+
+    <div style="display:flex;gap:32px;flex-wrap:wrap;">
+      <div style="text-align:center;">
+        <div style="font-family:var(--font-head);font-size:1.8rem;font-weight:700;color:var(--rose);">
+          {{ above|length }}
+        </div>
+        <div style="font-size:.78rem;color:rgba(255,255,255,.5);margin-top:4px;">Countries exceeding<br>global average</div>
+      </div>
+      <div style="text-align:center;">
+        <div style="font-family:var(--font-head);font-size:1.8rem;font-weight:700;color:var(--amber);">
+          {{ "{:,}".format(global_cases) }}
+        </div>
+        <div style="font-size:.78rem;color:rgba(255,255,255,.5);margin-top:4px;">Total cases<br>reported globally</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PHASE BREAKDOWN -->
+  {% if phase_breakdown %}
+  <div class="two-col" style="margin-bottom:28px;">
+
+    <div class="card">
+      <div class="card-header">
+        <h3>Above-Average Countries by Economic Phase</h3>
+      </div>
+      <div class="card-body">
+        {% set colours = ['rose','amber','sky','teal'] %}
+        {% for row in phase_breakdown %}
+        {% set c = colours[loop.index0 % 4] %}
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 0;
+                    border-bottom:{% if not loop.last %}1px solid var(--gray-100){% else %}none{% endif %};">
+          <div>
+            <span class="badge badge-{{ c }}" style="margin-bottom:4px;">{{ row.economic_phase }}</span>
+            <div style="font-size:.78rem;color:var(--gray-400);margin-top:2px;">Avg rate: {{ row.avg_rate }} per 100k</div>
+          </div>
+          <div style="text-align:right;">
+            <div style="font-family:var(--font-head);font-size:1.5rem;font-weight:700;color:var(--navy);">
+              {{ row.country_count }}
+            </div>
+            <div style="font-size:.72rem;color:var(--gray-400);">countries</div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h3>Worst Affected Countries (Top 5)</h3>
+        <span class="badge badge-rose">Highest rates</span>
+      </div>
+      <div class="card-body">
+        {% for row in above[:5] %}
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;
+                    border-bottom:{% if not loop.last %}1px solid var(--gray-100){% else %}none{% endif %};">
+          <div style="display:flex;align-items:center;gap:10px;">
+            <span style="font-family:var(--font-mono);font-size:.75rem;color:var(--gray-400);width:20px;">{{ loop.index }}</span>
+            <div>
+              <div style="font-weight:600;font-size:.875rem;color:var(--navy);">{{ row.country }}</div>
+              <div style="font-size:.75rem;color:var(--gray-400);">{{ row.region }}</div>
+            </div>
+          </div>
+          <div style="text-align:right;">
+            <div style="font-family:var(--font-mono);font-weight:700;color:var(--rose);">{{ row.cases_per_100k }}</div>
+            <div style="font-size:.72rem;color:var(--gray-400);">per 100k</div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+  </div>
+  {% endif %}
+
+  <!-- MAIN TABLE -->
+  <div class="card">
+    <div class="card-header">
+      <div>
+        <h3>All Countries Exceeding the Global Average</h3>
+        <div style="font-size:.8rem;color:var(--gray-400);margin-top:4px;">
+          {{ sel_disease }} · {{ sel_year }} · Global avg:
+          <strong style="color:var(--navy);">{{ global_rate }} per 100,000</strong>
+        </div>
+      </div>
+      <span class="result-count"><strong>{{ above|length }}</strong> countries</span>
+    </div>
+
+    <div class="table-wrap">
+      {% if above %}
+      <table>
+        <thead>
+          <tr>
+            <th style="width:40px;">#</th>
+            <th>Country</th>
+            <th>Region</th>
+            <th>Economic Phase</th>
+            <th>Cases per 100,000</th>
+            <th>Excess above global avg</th>
+            <th>Total Cases</th>
+            <th style="width:180px;">Rate vs Global Avg</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- First row: Global benchmark for reference -->
+          <tr style="background:rgba(0,201,167,.04);border-left:3px solid var(--teal);">
+            <td style="font-family:var(--font-mono);color:var(--gray-400);">—</td>
+            <td style="font-weight:700;color:var(--teal-dark);">🌐 Global Average</td>
+            <td colspan="2"><span style="font-size:.78rem;color:var(--gray-400);">All countries · all economic phases</span></td>
+            <td style="font-family:var(--font-mono);font-weight:700;color:var(--teal-dark);">{{ global_rate }}</td>
+            <td style="font-family:var(--font-mono);color:var(--gray-400);">—</td>
+            <td style="font-family:var(--font-mono);">{{ "{:,}".format(global_cases) }}</td>
+            <td>
+              <div class="progress-bar-wrap">
+                <div class="progress-track">
+                  <div class="progress-fill good" style="width:100%"></div>
+                </div>
+                <span class="progress-val" style="color:var(--teal-dark);">100%</span>
+              </div>
+            </td>
+          </tr>
+
+          {% set max_rate = above|map(attribute='cases_per_100k')|list|max %}
+          {% for row in above %}
+          <tr>
+            <td style="font-family:var(--font-mono);color:var(--gray-400);font-weight:600;">{{ loop.index }}</td>
+            <td style="font-weight:600;">{{ row.country }}</td>
+            <td><span class="badge badge-gray">{{ row.region }}</span></td>
+            <td>
+              {% if row.economic_phase == 'Developed' %}
+                <span class="badge badge-teal">{{ row.economic_phase }}</span>
+              {% elif row.economic_phase == 'Developing' %}
+                <span class="badge badge-amber">{{ row.economic_phase }}</span>
+              {% elif row.economic_phase == 'Least Developed' %}
+                <span class="badge badge-rose">{{ row.economic_phase }}</span>
+              {% else %}
+                <span class="badge badge-sky">{{ row.economic_phase }}</span>
+              {% endif %}
+            </td>
+            <td style="font-family:var(--font-mono);font-weight:700;color:var(--rose);">{{ row.cases_per_100k }}</td>
+            <td style="font-family:var(--font-mono);">
+              <span style="color:var(--rose);">+{{ row.excess_rate }}</span>
+              {% if row.pct_above_avg %}
+              <span style="font-size:.72rem;color:var(--gray-400);"> (+{{ row.pct_above_avg }}%)</span>
+              {% endif %}
+            </td>
+            <td style="font-family:var(--font-mono);">{{ "{:,}".format(row.cases) }}</td>
+            <td>
+              <div class="progress-bar-wrap">
+                {% set fill = (row.cases_per_100k / max_rate * 100)|round(1) if max_rate > 0 else 0 %}
+                <div class="progress-track">
+                  <div class="progress-fill poor" style="width:{{ fill }}%"></div>
+                </div>
+                <span class="progress-val">{{ fill }}%</span>
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <div class="empty-state">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+          <polyline points="22 4 12 14.01 9 11.01"/>
+        </svg>
+        <p>All countries are at or below the global average for <strong>{{ sel_disease }}</strong> in <strong>{{ sel_year }}</strong>.</p>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+
+</div>
+{% endblock %}
