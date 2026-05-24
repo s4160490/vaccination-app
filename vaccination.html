@@ -1,0 +1,193 @@
+{% extends "base.html" %}
+{% block title %}Vaccination Rates{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+  <div class="page-header-eyebrow">Level 2A — Shallow Glance</div>
+  <h1>Vaccination Rates by Country &amp; Region</h1>
+  <p>
+    Filter by antigen, year, country, and region to see which countries and
+    regions meet the 90% herd-immunity target.
+  </p>
+</div>
+
+<div class="content-area">
+
+  <!-- FILTER FORM -->
+  <div class="filter-card">
+    <form method="GET" action="{{ url_for('vaccination') }}">
+      <div class="filter-grid">
+
+        <div class="form-group">
+          <label for="antigen">Antigen / Vaccine</label>
+          <select name="antigen" id="antigen" class="form-control">
+            {% for a in antigens %}
+            <option value="{{ a.code }}" {% if a.code == sel_antigen %}selected{% endif %}>
+              {{ a.code }} — {{ a.full_name }}
+            </option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="year">Year</label>
+          <select name="year" id="year" class="form-control">
+            {% for y in years %}
+            <option value="{{ y }}" {% if y == sel_year %}selected{% endif %}>{{ y }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="region">Region (optional)</label>
+          <select name="region" id="region" class="form-control">
+            <option value="">All Regions</option>
+            {% for r in regions %}
+            <option value="{{ r }}" {% if r == sel_region %}selected{% endif %}>{{ r }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="country">Country (optional)</label>
+          <select name="country" id="country" class="form-control">
+            <option value="">All Countries</option>
+            {% for c in countries %}
+            <option value="{{ c }}" {% if c == sel_country %}selected{% endif %}>{{ c }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>&nbsp;</label>
+          <button type="submit" class="btn btn-primary" style="width:100%;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            </svg>
+            Apply Filters
+          </button>
+        </div>
+
+      </div>
+    </form>
+  </div>
+
+  <!-- TABLE 1 -->
+  <div class="card">
+    <div class="card-header">
+      <div>
+        <h3>Countries Meeting ≥ 90% of Vaccination Target</h3>
+        <div style="font-size:.8rem;color:var(--gray-400);margin-top:4px;">
+          Antigen: <strong>{{ sel_antigen }}</strong> &nbsp;|&nbsp; Year: <strong>{{ sel_year }}</strong>
+          {% if sel_region %} &nbsp;|&nbsp; Region: <strong>{{ sel_region }}</strong>{% endif %}
+          {% if sel_country %} &nbsp;|&nbsp; Country: <strong>{{ sel_country }}</strong>{% endif %}
+        </div>
+      </div>
+      <span class="result-count">
+        <strong>{{ table1|length }}</strong> countries
+      </span>
+    </div>
+
+    <div class="table-wrap">
+      {% if table1 %}
+      <table>
+        <thead>
+          <tr>
+            <th>Country</th>
+            <th>Region</th>
+            <th>Coverage (%)</th>
+            <th>Target (%)</th>
+            <th style="width:200px;">% of Target Met</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in table1 %}
+          <tr>
+            <td style="font-weight:600;">{{ row.country }}</td>
+            <td><span class="badge badge-gray">{{ row.region }}</span></td>
+            <td style="font-family:var(--font-mono);">{{ row.coverage }}%</td>
+            <td style="font-family:var(--font-mono); color:var(--gray-400);">{{ row.target_pct }}%</td>
+            <td>
+              <div class="progress-bar-wrap">
+                {% set pct = [row.pct_of_target, 100]|min %}
+                <div class="progress-track">
+                  <div class="progress-fill {% if pct >= 95 %}good{% elif pct >= 90 %}medium{% else %}poor{% endif %}"
+                       style="width:{{ pct }}%"></div>
+                </div>
+                <span class="progress-val">{{ row.pct_of_target }}%</span>
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <div class="empty-state">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
+        <p>No countries met the 90% target with the selected filters.</p>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- TABLE 2 -->
+  <div class="card">
+    <div class="card-header">
+      <div>
+        <h3>Regional Summary — Countries Meeting ≥ 90% Target</h3>
+        <div style="font-size:.8rem;color:var(--gray-400);margin-top:4px;">
+          Antigen: <strong>{{ sel_antigen }}</strong> &nbsp;|&nbsp; Year: <strong>{{ sel_year }}</strong>
+        </div>
+      </div>
+      <span class="result-count">
+        <strong>{{ table2|length }}</strong> regions
+      </span>
+    </div>
+
+    <div class="table-wrap">
+      {% if table2 %}
+      <table>
+        <thead>
+          <tr>
+            <th>Region</th>
+            <th>Countries Meeting Target</th>
+            <th style="width:220px;">Avg. Coverage</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in table2 %}
+          <tr>
+            <td style="font-weight:600;">{{ row.region }}</td>
+            <td>
+              <span style="font-family:var(--font-mono); font-size:1rem; font-weight:700; color:var(--navy);">{{ row.countries_met }}</span>
+              <span style="font-size:.78rem; color:var(--gray-400); margin-left:4px;">countries</span>
+            </td>
+            <td>
+              <div class="progress-bar-wrap">
+                <div class="progress-track">
+                  <div class="progress-fill {% if row.avg_coverage >= 90 %}good{% elif row.avg_coverage >= 75 %}medium{% else %}poor{% endif %}"
+                       style="width:{{ row.avg_coverage }}%"></div>
+                </div>
+                <span class="progress-val">{{ row.avg_coverage }}%</span>
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <div class="empty-state">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
+        <p>No regional data available for the selected filters.</p>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+
+</div>
+{% endblock %}

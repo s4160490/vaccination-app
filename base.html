@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>{% block title %}VaxInsight{% endblock %} | Preventable Infectious Diseases</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"/>
+  {% block extra_head %}{% endblock %}
+</head>
+<body>
+
+  <!-- SIDEBAR NAV -->
+  <nav class="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-icon">
+        <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="20" cy="20" r="18" stroke="currentColor" stroke-width="2"/>
+          <path d="M12 20 C12 14, 20 10, 20 20 C20 30, 28 26, 28 20" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+          <circle cx="20" cy="20" r="3" fill="currentColor"/>
+        </svg>
+      </div>
+      <div>
+        <span class="brand-name">VaxInsight</span>
+        <span class="brand-sub">Global Health Data</span>
+      </div>
+    </div>
+
+    <ul class="nav-links">
+      <li class="nav-section-label">Overview</li>
+      <li>
+        <a href="{{ url_for('landing') }}" class="nav-link {% if request.endpoint == 'landing' %}active{% endif %}">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+          <span>Dashboard</span>
+          <em class="nav-badge">L1A</em>
+        </a>
+      </li>
+      <li>
+        <a href="{{ url_for('mission') }}" class="nav-link {% if request.endpoint == 'mission' %}active{% endif %}">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+          <span>Our Mission</span>
+          <em class="nav-badge">L1B</em>
+        </a>
+      </li>
+      <li class="nav-section-label">Explore Data</li>
+
+      <li>
+        <a href="{{ url_for('vaccination') }}" class="nav-link {% if request.endpoint == 'vaccination' %}active{% endif %}">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M18 9l-5 5-4-4-3 3"/></svg>
+          <span>Vaccination Rates</span>
+          <em class="nav-badge">L2A</em>
+        </a>
+      </li>
+      <li>
+        <a href="{{ url_for('infection') }}" class="nav-link {% if request.endpoint == 'infection' %}active{% endif %}">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.22 4.22l2.12 2.12M17.66 17.66l2.12 2.12M2 12h3M19 12h3M4.22 19.78l2.12-2.12M17.66 6.34l2.12-2.12"/></svg>
+          <span>Infection by Economy</span>
+          <em class="nav-badge">L2B</em>
+        </a>
+      </li>
+      <li class="nav-section-label">Deep Dive</li>
+      <li>
+        <a href="{{ url_for('top_improvers') }}" class="nav-link {% if request.endpoint == 'top_improvers' %}active{% endif %}">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+          <span>Top Improvers</span>
+          <em class="nav-badge">L3A</em>
+        </a>
+      </li>
+      <li>
+        <a href="{{ url_for('above_average') }}" class="nav-link {% if request.endpoint == 'above_average' %}active{% endif %}">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          <span>Above-Average Rates</span>
+          <em class="nav-badge">L3B</em>
+        </a>
+      </li>
+    </ul>
+
+    <div class="sidebar-footer">
+      <span>COSC3107 | 3108</span>
+      <span>Studio Project 2025</span>
+    </div>
+  </nav>
+
+  <!-- MAIN CONTENT -->
+  <main class="main-content">
+    {% block content %}{% endblock %}
+  </main>
+
+  <script src="{{ url_for('static', filename='app.js') }}"></script>
+  {% block extra_scripts %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+{% block title %}Our Mission{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+  <div class="page-header-eyebrow">Level 1B — Mission Statement</div>
+  <h1>Our Mission &amp; Purpose</h1>
+  <p>
+    VaxInsight is a public health data platform built to make WHO immunisation
+    data accessible, understandable, and actionable for a diverse range of users.
+  </p>
+</div>
+
+<div class="content-area">
+
+  <!-- Mission Overview -->
+  <div class="two-col" style="margin-bottom:28px;">
+
+    <div class="card">
+      <div class="card-header"><h3>How We Address the Challenge</h3></div>
+      <div class="card-body">
+        <p style="font-size:.9rem;color:var(--gray-600);line-height:1.75;margin-bottom:16px;">
+          Vaccine-preventable diseases remain a major global health challenge. Despite
+          decades of progress — including the eradication of smallpox and near-elimination
+          of polio — disparities in vaccination coverage across countries and economic
+          groups persist.
+        </p>
+        <p style="font-size:.9rem;color:var(--gray-600);line-height:1.75;margin-bottom:16px;">
+          VaxInsight aggregates WHO data and presents it through a clear, user-centred
+          interface, enabling both high-level summaries and deep data exploration without
+          requiring technical expertise.
+        </p>
+        <p style="font-size:.9rem;color:var(--gray-600);line-height:1.75;">
+          Our goal is to inform, not advocate — presenting data in an unbiased,
+          respectful, and accessible way so that every stakeholder can draw
+          evidence-based conclusions.
+        </p>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><h3>How to Use This Website</h3></div>
+      <div class="card-body">
+        <div style="display:flex;flex-direction:column;gap:16px;">
+
+          <div style="display:flex;gap:14px;align-items:flex-start;">
+            <div style="width:32px;height:32px;border-radius:50%;background:rgba(0,201,167,.1);color:var(--teal);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.85rem;flex-shrink:0;">1</div>
+            <div>
+              <div style="font-weight:600;color:var(--navy);font-size:.9rem;margin-bottom:3px;">Start with the Dashboard</div>
+              <div style="font-size:.82rem;color:var(--gray-600);line-height:1.5;">Get a snapshot of global vaccination coverage and key statistics at a glance.</div>
+            </div>
+          </div>
+
+          <div style="display:flex;gap:14px;align-items:flex-start;">
+            <div style="width:32px;height:32px;border-radius:50%;background:rgba(245,158,11,.1);color:var(--amber);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.85rem;flex-shrink:0;">2</div>
+            <div>
+              <div style="font-weight:600;color:var(--navy);font-size:.9rem;margin-bottom:3px;">Explore Vaccination Rates</div>
+              <div style="font-size:.82rem;color:var(--gray-600);line-height:1.5;">Use filters to find which countries and regions meet the 90% herd-immunity target for a chosen antigen and year.</div>
+            </div>
+          </div>
+
+          <div style="display:flex;gap:14px;align-items:flex-start;">
+            <div style="width:32px;height:32px;border-radius:50%;background:rgba(56,189,248,.1);color:var(--sky);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.85rem;flex-shrink:0;">3</div>
+            <div>
+              <div style="font-weight:600;color:var(--navy);font-size:.9rem;margin-bottom:3px;">Analyse Infection by Economy</div>
+              <div style="font-size:.82rem;color:var(--gray-600);line-height:1.5;">Compare disease burden across economic groups — filter by disease type, economic phase, and year with sortable results.</div>
+            </div>
+          </div>
+
+          <div style="display:flex;gap:14px;align-items:flex-start;">
+            <div style="width:32px;height:32px;border-radius:50%;background:rgba(244,63,94,.1);color:var(--rose);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.85rem;flex-shrink:0;">4</div>
+            <div>
+              <div style="font-weight:600;color:var(--navy);font-size:.9rem;margin-bottom:3px;">Interpret &amp; Act</div>
+              <div style="font-size:.82rem;color:var(--gray-600);line-height:1.5;">Use our summaries and visualisations to identify patterns, disparities, and areas for policy action.</div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- PERSONAS -->
+  <h2 class="section-title">User Personas</h2>
+  <p class="section-sub">VaxInsight is designed to serve the following key user groups, each with distinct needs and goals.</p>
+
+  <div class="persona-grid">
+    {% for p in personas %}
+    <div class="persona-card">
+      <div class="persona-header">
+        <div class="persona-avatar">{{ p.name[0] }}</div>
+        <div>
+          <div class="persona-name">{{ p.name }}</div>
+          <div class="persona-role">{{ p.role }} &bull; Age {{ p.age }}</div>
+        </div>
+      </div>
+      <div class="persona-body">
+        <p class="persona-desc">{{ p.description }}</p>
+
+        <div class="persona-section-label">Goals</div>
+        <p class="persona-goals" style="margin-bottom:14px;">{{ p.goals }}</p>
+
+        <div class="persona-section-label">Frustrations with existing tools</div>
+        <p class="persona-frust">{{ p.frustrations }}</p>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+</div>
+{% endblock %}
